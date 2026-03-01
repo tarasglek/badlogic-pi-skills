@@ -19,11 +19,14 @@ npm install
 ## Start Chrome
 
 ```bash
-{baseDir}/browser-start.js              # Fresh profile
-{baseDir}/browser-start.js --profile    # Copy user's profile (cookies, logins)
+{baseDir}/browser-start.js                          # Fresh profile
+{baseDir}/browser-start.js --profile                # Copy user's profile (cookies, logins)
+{baseDir}/browser-start.js --browser chromium       # Explicit browser binary
 ```
 
-Launch Chrome with remote debugging on `:9222`. Use `--profile` to preserve user's authentication state.
+Launch Chrome/Chromium with remote debugging on `:9222`.
+Use `--profile` to preserve user's authentication state.
+Use `--browser <binary>` to select a specific browser executable (useful on Linux).
 
 ## Navigate
 
