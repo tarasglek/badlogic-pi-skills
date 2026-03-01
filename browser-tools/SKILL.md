@@ -83,6 +83,14 @@ Display all cookies for the current tab including domain, path, httpOnly, and se
 
 Navigate to a URL and extract readable content as markdown. Uses Mozilla Readability for article extraction and Turndown for HTML-to-markdown conversion. Works on pages with JavaScript content (waits for page to load).
 
+## Download Handling (X11 dialogs)
+
+Downloads use native platform UI (which has to be controlled outside DOM/CDP):
+
+On x11 poll for download dialog, then take screenshot, then use xdotool to save file
+
+Screenshot helps you  confirm where files are saved
+
 ## When to Use
 
 - Testing frontend code in a real browser
@@ -90,6 +98,7 @@ Navigate to a URL and extract readable content as markdown. Uses Mozilla Readabi
 - When user needs to visually see or interact with a page
 - Debugging authentication or session issues
 - Scraping dynamic content that requires JS execution
+- Handling native OS download dialogs that cannot be controlled via DOM/CDP
 
 ---
 
