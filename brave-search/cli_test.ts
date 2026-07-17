@@ -13,6 +13,7 @@ async function run(script: string) {
       "--allow-net",
       "--allow-read",
       "--allow-env",
+      "--allow-run=kill",
       "--node-modules-dir=none",
       script,
     ],
@@ -21,15 +22,23 @@ async function run(script: string) {
   }).output();
 }
 
-for (const script of ["search.ts", "content.ts"]) {
+const shebangs = {
+  "search.ts": "#!/usr/bin/env -S deno run --allow-net --allow-read --allow-env --allow-run=kill --node-modules-dir=none",
+  "content.ts": "#!/usr/bin/env -S deno run --allow-net --allow-read --allow-env --node-modules-dir=none",
+};
+
+for (const [script, shebang] of Object.entries(shebangs)) {
   Deno.test(`${script} uses the Deno shebang`, async () => {
     const source = await Deno.readTextFile(script);
-    assertEquals(
-      source.split("\n", 1)[0],
-      "#!/usr/bin/env -S deno run --allow-net --allow-read --allow-env --node-modules-dir=none",
-    );
+    assertEquals(source.split("\n", 1)[0], shebang);
   });
 }
+
+Deno.test("search routes Brave fetch through rate limiter", async () => {
+  const source = await Deno.readTextFile("search.ts");
+  assertStringIncludes(source, 'from "./rate_limit.ts"');
+  assertStringIncludes(source, "await withBraveRateLimit(() => fetch(");
+});
 
 Deno.test("search without arguments prints TypeScript usage", async () => {
   const output = await run("search.ts");

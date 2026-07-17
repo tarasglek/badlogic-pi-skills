@@ -154,7 +154,7 @@ Do not lock result-page fetches performed for `--content`. Preserve response par
 ```bash
 deno test --allow-read --allow-run cli_test.ts
 deno test --allow-read --allow-write --allow-run --allow-env --node-modules-dir=none *_test.ts
-deno check --allow-import search.ts content.ts
+deno check --allow-import --node-modules-dir=none search.ts content.ts
 ```
 
 Expected: all tests PASS and both entry points check successfully.
@@ -188,7 +188,7 @@ Expected: no matches.
 ```bash
 cd brave-search
 deno test --allow-read --allow-write --allow-run --allow-env --node-modules-dir=none *_test.ts
-deno check --allow-import search.ts content.ts
+deno check --allow-import --node-modules-dir=none search.ts content.ts
 git status --short
 ```
 

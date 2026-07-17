@@ -1,10 +1,11 @@
-#!/usr/bin/env -S deno run --allow-net --allow-read --allow-env --node-modules-dir=none
+#!/usr/bin/env -S deno run --allow-net --allow-read --allow-env --allow-run=kill --node-modules-dir=none
 
 import {
   formatResults,
   parseSearchArgs,
   type SearchResult,
 } from "./search_core.ts";
+import { withBraveRateLimit } from "./rate_limit.ts";
 import { fetchPageContent } from "./web_content.ts";
 
 const USAGE = `Usage: search.ts <query> [-n <num>] [--content] [--country <code>] [--freshness <period>]
@@ -50,7 +51,7 @@ async function fetchBraveResults(
   });
   if (freshness) params.append("freshness", freshness);
 
-  const response = await fetch(
+  const response = await withBraveRateLimit(() => fetch(
     `https://api.search.brave.com/res/v1/web/search?${params}`,
     {
       headers: {
@@ -58,8 +59,9 @@ async function fetchBraveResults(
         "Accept-Encoding": "gzip",
         "X-Subscription-Token": apiKey,
       },
+      signal: AbortSignal.timeout(15_000),
     },
-  );
+  ));
 
   if (!response.ok) {
     const errorText = await response.text();
