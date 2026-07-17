@@ -18,22 +18,18 @@ Requires a Brave Search API account with a free subscription. A credit card is r
    ```bash
    export BRAVE_API_KEY="your-api-key-here"
    ```
-5. Install dependencies (run once):
-   ```bash
-   cd {baseDir}
-   npm install
-   ```
+5. Install [Deno](https://deno.com/) if it is not already available. Dependencies are fetched automatically on first use.
 
 ## Search
 
 ```bash
-{baseDir}/search.js "query"                         # Basic search (5 results)
-{baseDir}/search.js "query" -n 10                   # More results (max 20)
-{baseDir}/search.js "query" --content               # Include page content as markdown
-{baseDir}/search.js "query" --freshness pw          # Results from last week
-{baseDir}/search.js "query" --freshness 2024-01-01to2024-06-30  # Date range
-{baseDir}/search.js "query" --country DE            # Results from Germany
-{baseDir}/search.js "query" -n 3 --content          # Combined options
+{baseDir}/search.ts "query"                         # Basic search (5 results)
+{baseDir}/search.ts "query" -n 10                   # More results (max 20)
+{baseDir}/search.ts "query" --content               # Include page content as markdown
+{baseDir}/search.ts "query" --freshness pw          # Results from last week
+{baseDir}/search.ts "query" --freshness 2024-01-01to2024-06-30  # Date range
+{baseDir}/search.ts "query" --country DE            # Results from Germany
+{baseDir}/search.ts "query" -n 3 --content          # Combined options
 ```
 
 ### Options
@@ -48,10 +44,14 @@ Requires a Brave Search API account with a free subscription. A credit card is r
   - `py` - Past year
   - `YYYY-MM-DDtoYYYY-MM-DD` - Custom date range
 
+## Concurrent Searches
+
+Searches from the same Linux/macOS user are serialized by a local PID lock to respect Brave's one-request-per-second free-plan limit. Waiting processes report lock status to stderr once per second. Dead owners and locks older than 30 seconds are reclaimed automatically. The executable grants Deno permission to run only POSIX `kill`, used as `kill -0` to check whether the owner still exists.
+
 ## Extract Page Content
 
 ```bash
-{baseDir}/content.js https://example.com/article
+{baseDir}/content.ts https://example.com/article
 ```
 
 Fetches a URL and extracts readable content as markdown.
