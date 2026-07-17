@@ -33,7 +33,7 @@ The existing CLI flags, output, API key handling, and non-rate-limit HTTP error 
 
 ## Testing
 
-Deno tests use temporary state directories and injected timing/process-check functions to verify:
+Sans-I/O unit tests use an in-memory lock backend plus injected timing, logging, and process checks. One small integration test uses a temporary directory to verify Deno's real atomic lock operations. Tests verify:
 
 - one caller acquires and releases the lock;
 - a second caller waits while a live owner holds it;

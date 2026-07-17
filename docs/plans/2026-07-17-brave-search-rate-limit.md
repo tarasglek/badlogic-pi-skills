@@ -18,36 +18,18 @@
 
 **Step 1: Write failing tests**
 
-Add tests for these observable behaviors:
+Add sans-I/O table tests for one pure decision function:
 
 ```ts
-Deno.test("withBraveRateLimit releases its lock after success", async () => {
-  // temporary state directory, no-op sleep, action returns value
-  // assert value and assert lock directory no longer exists
-});
-
-Deno.test("withBraveRateLimit releases its lock when action throws", async () => {
-  // action throws; assert rejection and lock cleanup
-});
-
-Deno.test("dead owner lock is reclaimed", async () => {
-  // pre-create lock/pid; inject isProcessAlive returning false
-  // assert action runs and lock is cleaned
-});
-
-Deno.test("old owner lock is reclaimed", async () => {
-  // pre-create lock and inject clock beyond stale threshold
-  // assert action runs
-});
-
-Deno.test("live owner wait logs once per second", async () => {
-  // inject clock/sleep/process check; owner becomes dead after >1 second
-  // assert stderr logger receives initial and one-second status messages,
-  // not one message per polling iteration
+Deno.test("decideLock handles live, dead, stale, and log-due locks", () => {
+  assertEquals(decideLock({ ageMs: 0, pidAlive: true, logDue: false }), "wait");
+  assertEquals(decideLock({ ageMs: 0, pidAlive: false, logDue: false }), "reap");
+  assertEquals(decideLock({ ageMs: 30_001, pidAlive: true, logDue: false }), "reap");
+  assertEquals(decideLock({ ageMs: 0, pidAlive: true, logDue: true }), "log");
 });
 ```
 
-Use `Deno.makeTempDir`, injected clock/sleep/process-liveness functions, and cleanup in `finally`.
+Add one small integration test using `Deno.makeTempDir`: verify `tryLock` succeeds once, fails while held, writes the owner PID, and succeeds again after `unlock`. Keep all other tests free of filesystem, process, network, and real-time I/O.
 
 **Step 2: Run test to verify it fails**
 
@@ -62,26 +44,19 @@ Expected: FAIL because `rate_limit.ts` does not exist.
 
 **Step 3: Implement minimal lock module**
 
-Create these exported interfaces/functions:
+Keep the production API brutally small:
 
 ```ts
-export interface RateLimitOptions {
-  stateDir?: string;
-  intervalMs?: number;
-  pollMs?: number;
-  staleMs?: number;
-  pid?: number;
-  now?: () => number;
-  sleep?: (ms: number) => Promise<void>;
-  isProcessAlive?: (pid: number) => Promise<boolean>;
-  log?: (message: string) => void;
-}
-
+export type LockDecision = "wait" | "log" | "reap";
+export function decideLock(state: {
+  ageMs: number;
+  pidAlive: boolean;
+  logDue: boolean;
+}): LockDecision;
 export function defaultRateLimitStateDir(): string;
-export async function withBraveRateLimit<T>(
-  action: () => Promise<T>,
-  options?: RateLimitOptions,
-): Promise<T>;
+export async function tryLock(stateDir: string, pid?: number): Promise<boolean>;
+export async function unlock(stateDir: string): Promise<void>;
+export async function withBraveRateLimit<T>(action: () => Promise<T>): Promise<T>;
 ```
 
 State location:
@@ -92,7 +67,7 @@ const runtimeDir = Deno.env.get("XDG_RUNTIME_DIR") ??
 return `${runtimeDir}/brave-search-${Deno.uid()}`;
 ```
 
-Acquisition algorithm:
+Implement this directly, without backend classes or a general framework. Acquisition algorithm:
 
 1. Create state directory mode `0700`.
 2. Try atomic `Deno.mkdir(lockDir)`.
