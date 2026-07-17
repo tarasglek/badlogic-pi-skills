@@ -12,8 +12,10 @@ async function run(script: string) {
       "run",
       "--allow-net",
       "--allow-read",
+      "--allow-write",
       "--allow-env",
       "--allow-run=kill",
+      "--allow-sys=uid",
       "--node-modules-dir=none",
       script,
     ],
@@ -23,7 +25,7 @@ async function run(script: string) {
 }
 
 const shebangs = {
-  "search.ts": "#!/usr/bin/env -S deno run --allow-net --allow-read --allow-env --allow-run=kill --node-modules-dir=none",
+  "search.ts": "#!/usr/bin/env -S deno run --allow-net --allow-read --allow-write --allow-env --allow-run=kill --allow-sys=uid --node-modules-dir=none",
   "content.ts": "#!/usr/bin/env -S deno run --allow-net --allow-read --allow-env --node-modules-dir=none",
 };
 

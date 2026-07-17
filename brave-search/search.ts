@@ -1,4 +1,4 @@
-#!/usr/bin/env -S deno run --allow-net --allow-read --allow-env --allow-run=kill --node-modules-dir=none
+#!/usr/bin/env -S deno run --allow-net --allow-read --allow-write --allow-env --allow-run=kill --allow-sys=uid --node-modules-dir=none
 
 import {
   formatResults,
