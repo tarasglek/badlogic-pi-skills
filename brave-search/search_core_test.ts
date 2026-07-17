@@ -1,5 +1,5 @@
 import { assertEquals } from "jsr:@std/assert@1.0.16";
-import { formatResults, parseSearchArgs } from "./search_core.js";
+import { formatResults, parseSearchArgs } from "./search_core.ts";
 
 Deno.test("parseSearchArgs returns existing defaults", () => {
   assertEquals(parseSearchArgs([]), {

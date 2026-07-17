@@ -1,8 +1,9 @@
 import {
   assertEquals,
+  assertExists,
   assertMatch,
 } from "jsr:@std/assert@1.0.16";
-import { extractPageHtml, htmlToMarkdown } from "./web_content.js";
+import { extractPageHtml, htmlToMarkdown } from "./web_content.ts";
 
 Deno.test("htmlToMarkdown uses GFM and removes empty links", () => {
   const markdown = htmlToMarkdown(`
@@ -30,6 +31,7 @@ Deno.test("extractPageHtml extracts a readable article", () => {
     "https://example.com/article",
   );
 
+  assertExists(extracted.content);
   assertMatch(extracted.content, /Deno Article/);
   assertMatch(extracted.content, /substantial article paragraph/);
   assertEquals(extracted.content.includes("Ignore this navigation"), false);
@@ -46,6 +48,7 @@ Deno.test("extractPageHtml falls back to main content and removes noise", () => 
   );
 
   assertEquals(extracted.title, "Fallback Page");
+  assertExists(extracted.content);
   assertMatch(extracted.content, /## Main heading/);
   assertEquals(extracted.content.includes("Navigation noise"), false);
   assertEquals(extracted.content.includes("script noise"), false);

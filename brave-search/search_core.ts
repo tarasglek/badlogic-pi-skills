@@ -1,11 +1,32 @@
-function removeBooleanFlag(args, flag) {
+export interface SearchOptions {
+  query: string;
+  fetchContent: boolean;
+  numResults: number;
+  country: string;
+  freshness: string | null;
+}
+
+export interface SearchResult {
+  title: string;
+  link: string;
+  snippet: string;
+  age?: string;
+  content?: string;
+}
+
+function removeBooleanFlag(args: string[], flag: string): boolean {
   const index = args.indexOf(flag);
   if (index === -1) return false;
   args.splice(index, 1);
   return true;
 }
 
-function removeValueFlag(args, flag, defaultValue, transform) {
+function removeValueFlag<T>(
+  args: string[],
+  flag: string,
+  defaultValue: T,
+  transform: (value: string) => T,
+): T {
   const index = args.indexOf(flag);
   if (index === -1 || !args[index + 1]) return defaultValue;
   const value = transform(args[index + 1]);
@@ -13,7 +34,7 @@ function removeValueFlag(args, flag, defaultValue, transform) {
   return value;
 }
 
-export function parseSearchArgs(args) {
+export function parseSearchArgs(args: string[]): SearchOptions {
   const remaining = [...args];
   const fetchContent = removeBooleanFlag(remaining, "--content");
   const numResults = removeValueFlag(
@@ -44,7 +65,7 @@ export function parseSearchArgs(args) {
   };
 }
 
-export function formatResults(results) {
+export function formatResults(results: SearchResult[]): string {
   return results.map((result, index) => {
     const lines = [
       `--- Result ${index + 1} ---`,
