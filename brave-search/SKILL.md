@@ -22,6 +22,8 @@ Requires a Brave Search API account with a free subscription. A credit card is r
 
 ## Search
 
+Invoke `search.ts` directly so its shebang grants `--allow-sys=uid`, which the rate-limit lock needs to identify its owner. Do not replace this with a partial `deno run` command; if manual Deno invocation is necessary, preserve every permission from the shebang.
+
 ```bash
 {baseDir}/search.ts "query"                         # Basic search (5 results)
 {baseDir}/search.ts "query" -n 10                   # More results (max 20)
