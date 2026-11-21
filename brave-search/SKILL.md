@@ -22,16 +22,18 @@ Requires a Brave Search API account with a free subscription. A credit card is r
 
 ## Search
 
+Spell `$BRAVE_API_KEY` in the command, as below. Shells started by a coding agent may only receive secrets that the command names.
+
 Invoke `search.ts` directly so its shebang grants `--allow-sys=uid`, which the rate-limit lock needs to identify its owner. Do not replace this with a partial `deno run` command; if manual Deno invocation is necessary, preserve every permission from the shebang.
 
 ```bash
-{baseDir}/search.ts "query"                         # Basic search (5 results)
-{baseDir}/search.ts "query" -n 10                   # More results (max 20)
-{baseDir}/search.ts "query" --content               # Include page content as markdown
-{baseDir}/search.ts "query" --freshness pw          # Results from last week
-{baseDir}/search.ts "query" --freshness 2024-01-01to2024-06-30  # Date range
-{baseDir}/search.ts "query" --country DE            # Results from Germany
-{baseDir}/search.ts "query" -n 3 --content          # Combined options
+BRAVE_API_KEY="$BRAVE_API_KEY" {baseDir}/search.ts "query"                         # Basic search (5 results)
+BRAVE_API_KEY="$BRAVE_API_KEY" {baseDir}/search.ts "query" -n 10                   # More results (max 20)
+BRAVE_API_KEY="$BRAVE_API_KEY" {baseDir}/search.ts "query" --content               # Include page content as markdown
+BRAVE_API_KEY="$BRAVE_API_KEY" {baseDir}/search.ts "query" --freshness pw          # Results from last week
+BRAVE_API_KEY="$BRAVE_API_KEY" {baseDir}/search.ts "query" --freshness 2024-01-01to2024-06-30  # Date range
+BRAVE_API_KEY="$BRAVE_API_KEY" {baseDir}/search.ts "query" --country DE            # Results from Germany
+BRAVE_API_KEY="$BRAVE_API_KEY" {baseDir}/search.ts "query" -n 3 --content          # Combined options
 ```
 
 ### Options
